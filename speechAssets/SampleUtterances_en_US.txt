@@ -1,0 +1,26 @@
+AddTaskIntent add  task related to {Name} about {new sales |Subject}
+AddTaskIntent add  task connected to {Name} about {new sales |Subject}
+
+AddTaskIntent create task about {software developing |Subject} related to {Name} 
+AddTaskIntent create task about {software developing |Subject} connected to {Name}
+
+AddTaskIntent add  task related to {Name} about {new |Subject}
+AddTaskIntent add  task connected to {Name} about {new |Subject}
+
+AddTaskIntent create task about {software |Subject} related to {Name} 
+AddTaskIntent create task about {software |Subject} connected to {Name}
+
+UpdateTaskIntent mark as {Status} of task about {Company |Subject}  related to {Name}
+UpdateTaskIntent mark as {Status} of note about {Company |Subject}  related to {Name} 
+
+UpdateTaskIntent change status to {Status} of task about {Company |Subject}  related to {Name}
+UpdateTaskIntent change status to {Status} of note about {Company |Subject}  related to {Name} 
+
+UpdateTaskIntent mark as {Status} of task about {Company developing |Subject}  related to {Name}
+UpdateTaskIntent mark as {Status} of note about {Company developing |Subject}  related to {Name} 
+
+UpdateTaskIntent update to {Status} of task about {Company developing |Subject}  related to {Name}
+UpdateTaskIntent update to {Status} of note about {Company developing |Subject}  related to {Name} 
+
+GetContactInfoIntent get contact info about {John |Name}
+GetContactInfoIntent tell me about {Jeff Bezos |Name}

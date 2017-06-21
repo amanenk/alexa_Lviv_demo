@@ -1,0 +1,51 @@
+{
+  "intents": [
+    {
+      "slots": [
+        {
+          "name": "Name",
+          "type": "AMAZON.Person"
+        },
+        {
+          "name": "Subject",
+          "type": "LITERAL"
+        },
+        {
+          "name": "Status",
+          "type": "STATUS_LIST"
+        },
+        {
+          "name": "Comment",
+          "type": "LITERAL"
+        }
+      ],
+      "intent": "AddTaskIntent"
+    },
+    {
+      "slots": [
+        {
+          "name": "Name",
+          "type": "AMAZON.Person"
+        },
+        {
+          "name": "Subject",
+          "type": "LITERAL"
+        },
+        {
+          "name": "Status",
+          "type": "STATUS_LIST"
+        }
+      ],
+      "intent": "UpdateTaskIntent"
+    },
+    {
+      "slots": [
+        {
+          "name": "Name",
+          "type": "AMAZON.Person"
+        }
+      ],
+      "intent": "GetContactInfoIntent"
+    }
+  ]
+}
