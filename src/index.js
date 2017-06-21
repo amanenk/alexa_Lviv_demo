@@ -1,9 +1,8 @@
 'use strict';
-var APP_ID = "amzn1.ask.skill.87ae2150-bdd8-46e1-b783-a7bd1563e406"; // TODO replace with your app ID (OPTIONAL).
+var APP_ID = "amzn1.ask.skill.2bddeb66-c52b-485d-aa26-a4e821a65e63"; // TODO replace with your app ID (OPTIONAL).
 var accessToken;
 
 const Alexa = require('alexa-sdk');
-var http = require('http');
 var request = require('request');
 
 var speechOutput;
@@ -40,48 +39,127 @@ var handlers = {
         //SELECT id,CreatedDate FROM Lead WHERE Status='' ORDER BY CreatedDate DESC
         var self = this;
 
-        var Name = isSlotValid(this.event.request, "Name");
+       var Name = isSlotValid(this.event.request, "Name");
 
         if (self.event.request.intent.slots != undefined) {
             console.log("slots: " + JSON.stringify(self.event.request.intent.slots));
         }
 
-        var records = [];
+        getListOfCoctailsByName(Name, function (records) {
+            var count = 0;
+            var speechOutput = "";
 
-        records = getListOfCoctailsByName(Name);
-
-        var count = 0;
-        var speechOutput = "";
-
-        if (records != null) {
-            count = records.length;
-            if (count == 1) {
-                speechOutput = "i found " + records[0].strDrink + "; The instrucion is: " + records[0].strInstructions + ";";
-            } else if (count == 2) {
-                speechOutput = "i found 2 coctails with this name; The " + records[0].strDrink + " and " + records[1].strDrink + "; Which one are you want to make?";
-            } else if (count >= 3) {
-                speechOutput = "i found " + count + " coctails with this name; The first 3 is the " + records[0].strDrink + ", " + records[1].strDrink + ", " + records[2].strDrink + "; Which one are you want to make?";
-            } else if (count == 0) {
+            if (records != null) {
+                count = records.length;
+                if (count == 1) {
+                    speechOutput = "i found " + records[0].strDrink + "; The instrucion is: " + records[0].strInstructions + ";";
+                    if (records[0].strDrinkThumb != null) {
+                        var imageObj = {
+                            smallImageUrl: records[0].strDrinkThumb,
+                            largeImageUrl: records[0].strDrinkThumb
+                        };
+                        var cardTitle = records[0].strDrink;
+                        var cardContent = records[0].strInstructions;
+                    }
+                } else if (count == 2) {
+                    speechOutput = "i found 2 coctails with this name; The " + records[0].strDrink + " and " + records[1].strDrink + "; Which one are you want to make?";
+                } else if (count >= 3) {
+                    speechOutput = "i found " + count + " coctails with this name; The first 3 is the " + records[0].strDrink + ", " + records[1].strDrink + ", " + records[2].strDrink + "; Which one are you want to make?";
+                } else if (count == 0) {
+                    speechOutput = "I can't find any coctail with this name";
+                }
+            } else {
                 speechOutput = "I can't find any coctail with this name";
             }
-            // for (var i in drinks) {
-            //     var drink = drinks[i];
-            //     console.log(drink.strDrink)
-            //     var instruction = drink.strInstructions
-            //     console.log("\t" + instruction);
-            //     var i = 1;
-            //     while (i < 16 && drink["strIngredient" + i] != "") {
-            //         console.log("\t" + "Ingredient: " + drink["strIngredient" + i])
-            //         if (drink["strMeasure" + i] != "" && drink["strMeasure" + i] != "\n") {
-            //             console.log("\t" + "Measure: " + drink["strMeasure" + i])
-            //         }
-            //         i++;
-            //     }
-            // }
-        } else {
-            speechOutput = "I can't find any coctail with this name";
+            console.log("end of request");
+
+
+            if (imageObj != null && cardTitle != null && cardContent != null) {
+                self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
+            } else {
+                self.emit(':tell', speechOutput);
+            }
+        });
+        
+    }, 'GetByIngredient': function () {
+        //SELECT id,CreatedDate FROM Lead WHERE Status='' ORDER BY CreatedDate DESC
+        var self = this;
+
+        var Name = isSlotValid(this.event.request, "Ingredient");
+
+        if (self.event.request.intent.slots != undefined) {
+            console.log("slots: " + JSON.stringify(self.event.request.intent.slots));
         }
-        this.emit(':tell', speechOutput);
+
+        getListOfCoctailsIngredient(Name, function (records) {
+            var count = 0;
+            var speechOutput = "";
+
+            if (records != null) {
+                count = records.length;
+                if (count == 1) {
+                    speechOutput = "i found " + records[0].strDrink + "; The instrucion is: " + records[0].strInstructions + ";";
+                    if (records[0].strDrinkThumb != null) {
+                        var imageObj = {
+                            smallImageUrl: records[0].strDrinkThumb,
+                            largeImageUrl: records[0].strDrinkThumb
+                        };
+                        var cardTitle = records[0].strDrink;
+                        var cardContent = records[0].strInstructions;
+                    }
+                } else if (count == 2) {
+                    speechOutput = "i found 2 coctails with this name; The " + records[0].strDrink + " and " + records[1].strDrink + "; Which one are you want to make?";
+                } else if (count >= 3) {
+                    speechOutput = "i found " + count + " coctails with this name; The first 3 is the " + records[0].strDrink + ", " + records[1].strDrink + ", " + records[2].strDrink + "; Which one are you want to make?";
+                } else if (count == 0) {
+                    speechOutput = "I can't find any coctail with this name";
+                }
+            } else {
+                speechOutput = "I can't find any coctail with this name";
+            }
+            console.log("end of request");
+
+
+            if (imageObj != null && cardTitle != null && cardContent != null) {
+                self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
+            } else {
+                self.emit(':tell', speechOutput);
+            }
+
+        });
+    },'GetRandom': function () {
+        //SELECT id,CreatedDate FROM Lead WHERE Status='' ORDER BY CreatedDate DESC
+        var self = this;
+
+        if (self.event.request.intent.slots != undefined) {
+            console.log("slots: " + JSON.stringify(self.event.request.intent.slots));
+        }
+
+        getListOfCoctailRandom(function (records) {
+            var speechOutput = "";
+
+            if (records != null) {
+                    speechOutput = "Your random cocktail is " + records[0].strDrink + "; The instrucion is: " + records[0].strInstructions + ";";
+                    if (records[0].strDrinkThumb != null) {
+                        var imageObj = {
+                            smallImageUrl: records[0].strDrinkThumb,
+                            largeImageUrl: records[0].strDrinkThumb
+                        };
+                        var cardTitle = records[0].strDrink;
+                        var cardContent = records[0].strInstructions;
+                    }
+            } else {
+                speechOutput = "I can't find any coctail";
+            }
+            console.log("end of request");
+
+
+            if (imageObj != null && cardTitle != null && cardContent != null) {
+                self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
+            } else {
+                self.emit(':tell', speechOutput);
+            }
+        });
     },
     'AMAZON.NoIntent': function () {
         this.emit(':tell', 'Ok, see you next time!');
@@ -108,46 +186,57 @@ var handlers = {
     }
 };
 
-function getListOfCoctailsByName(name) {
+function getListOfCoctailsByName(name, callback) {
+    var result;
+    console.log("request: " + 'http://www.thecocktaildb.com/api/json/v1/1/search.php?s=' + name);
     request('http://www.thecocktaildb.com/api/json/v1/1/search.php?s=' + name, function (error, response, body) {
         if (!error) {
             console.log("ok");
             var object = JSON.parse(body);
-            return object.drinks;
+            result = object.drinks;
+            callback(result);
         } else {
             console.log("error");
             console.log(error.code);
-            return null;
+            result = null;
+            callback(result);
+        }
+    });
+}
+function getListOfCoctailsIngredient(ingredient, callback) {
+    var result;
+    console.log("request: " + 'http://www.thecocktaildb.com/api/json/v1/1/filter.php?i=' + ingredient);
+    request('http://www.thecocktaildb.com/api/json/v1/1/search.php?s=' + ingredient, function (error, response, body) {
+        if (!error) {
+            console.log("ok");
+            var object = JSON.parse(body);
+            result = object.drinks;
+            callback(result);
+        } else {
+            console.log("error");
+            console.log(error.code);
+            result = null;
+            callback(result);
         }
     });
 }
 
-function getListOfCoctailsByIngredient(ingr) {
-    request('http://www.thecocktaildb.com/api/json/v1/1/search.php?s=' + ingr, function (error, response, body) {
+function getListOfCoctailRandom(callback) {
+    var result;
+    console.log("request: " + 'http://www.thecocktaildb.com/api/json/v1/1/random.php');
+    request('http://www.thecocktaildb.com/api/json/v1/1/random.php', function (error, response, body) {
         if (!error) {
             console.log("ok");
-            var object = JSON.parse(body)
-            var drinks = object.drinks
-            for (var i in drinks) {
-                var drink = drinks[i];
-                console.log(drink.strDrink)
-                var instruction = drink.strInstructions
-                console.log("\t" + instruction);
-                var i = 1;
-                while (i < 16 && drink["strIngredient" + i] != "") {
-                    console.log("\t" + "Ingredient: " + drink["strIngredient" + i])
-                    if (drink["strMeasure" + i] != "" && drink["strMeasure" + i] != "\n") {
-                        console.log("\t" + "Measure: " + drink["strMeasure" + i])
-                    }
-                    i++;
-                }
-            }
+            var object = JSON.parse(body);
+            result = object.drinks;
+            callback(result);
         } else {
             console.log("error");
             console.log(error.code);
+            result = null;
+            callback(result);
         }
     });
-
 }
 
 function delegateSlotCollection() {
