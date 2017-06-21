@@ -4,7 +4,10 @@ It is demonstrate the connection to RESTful service.
 
 Main functions:
 find the the reciptes of the coctails by name
-find the  the reciptes of the coctails by ingredient
+find the the reciptes of the non alcoholic coctails by name
+find the the reciptes of the coctails by ingredient
+find the the description of ingredient
+find the the reciptes of random coctail
 
 the api is:
 Search cocktail by name
