@@ -1,0 +1,155 @@
+{
+  "intents": [
+    {
+      "name": "AMAZON.CancelIntent",
+      "samples": []
+    },
+    {
+      "name": "AMAZON.HelpIntent",
+      "samples": []
+    },
+    {
+      "name": "AMAZON.StopIntent",
+      "samples": []
+    },
+    {
+      "name": "GetByIngredient",
+      "samples": [
+        "to find the cocktail with {Ingredient}",
+        "what are some {Ingredient} based cocktails",
+        "find a {Ingredient} based cocktail",
+        "for something with {Ingredient}",
+        "for {Ingredient} based cocktail"
+      ],
+      "slots": [
+        {
+          "name": "Ingredient",
+          "type": "AMAZON.Drink",
+          "samples": [
+            "{Ingredient}",
+            "it is {Ingredient}"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GetByName",
+      "samples": [
+        "what about {Name}",
+        "how about {Name}",
+        "for {Name}",
+        "to find {Name}"
+      ],
+      "slots": [
+        {
+          "name": "Name",
+          "type": "AMAZON.Drink",
+          "samples": [
+            "i want {Name}",
+            "{Name}",
+            "it is {Name}"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GetByNumber",
+      "samples": [
+        "{Number}",
+        "i want {Number}",
+        "{Number} please",
+        "i {Number}"
+      ],
+      "slots": [
+        {
+          "name": "Number",
+          "type": "AMAZON.NUMBER",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "GetRandom",
+      "samples": [
+        "i want some cocktail",
+        "i want random cocktail",
+        "find me some random cocktail",
+        "to find a random cocktail"
+      ],
+      "slots": []
+    }
+  ],
+  "prompts": [
+    {
+      "id": "Elicit.Intent-GetByIngredient.IntentSlot-Ingredient",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "Ingredient?"
+        },
+        {
+          "type": "PlainText",
+          "value": "what Ingredient?"
+        }
+      ]
+    },
+    {
+      "id": "Elicit.Intent-GetByName.IntentSlot-Name",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "What is the name of the cocktail?"
+        },
+        {
+          "type": "PlainText",
+          "value": "what cocktail?"
+        },
+        {
+          "type": "PlainText",
+          "value": "please tell me the name of the cocktail"
+        }
+      ]
+    }
+  ],
+  "dialog": {
+    "version": "1.0",
+    "intents": [
+      {
+        "name": "GetByIngredient",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "Ingredient",
+            "type": "AMAZON.Drink",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-GetByIngredient.IntentSlot-Ingredient"
+            }
+          }
+        ]
+      },
+      {
+        "name": "GetByName",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "Name",
+            "type": "AMAZON.Drink",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-GetByName.IntentSlot-Name"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

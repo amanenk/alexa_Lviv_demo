@@ -1,51 +1,43 @@
 {
   "intents": [
     {
+      "intent": "GetByIngredient",
       "slots": [
         {
-          "name": "Name",
-          "type": "AMAZON.Person"
-        },
-        {
-          "name": "Subject",
-          "type": "LITERAL"
-        },
-        {
-          "name": "Status",
-          "type": "STATUS_LIST"
-        },
-        {
-          "name": "Comment",
-          "type": "LITERAL"
+          "name": "Ingredient",
+          "type": "AMAZON.Drink"
         }
-      ],
-      "intent": "AddTaskIntent"
+      ]
     },
     {
+      "intent": "GetByName",
       "slots": [
         {
           "name": "Name",
-          "type": "AMAZON.Person"
-        },
-        {
-          "name": "Subject",
-          "type": "LITERAL"
-        },
-        {
-          "name": "Status",
-          "type": "STATUS_LIST"
+          "type": "AMAZON.Drink"
         }
-      ],
-      "intent": "UpdateTaskIntent"
+      ]
     },
     {
+      "intent": "GetByNumber",
       "slots": [
         {
-          "name": "Name",
-          "type": "AMAZON.Person"
+          "name": "Number",
+          "type": "AMAZON.NUMBER"
         }
-      ],
-      "intent": "GetContactInfoIntent"
+      ]
+    },
+    {
+      "intent": "GetRandom"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
     }
   ]
 }
