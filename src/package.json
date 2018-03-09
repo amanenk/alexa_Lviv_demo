@@ -14,6 +14,7 @@
   "author": "alwaysbeclozing.com",
   "dependencies": {
     "alexa-sdk": "^1.0.10",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "ssml-builder": "^0.2.3"
   }
 }

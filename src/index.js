@@ -4,6 +4,7 @@ var accessToken;
 
 const Alexa = require('alexa-sdk');
 var request = require('request');
+var Speech = require('ssml-builder');
 
 var speechOutput;
 var reprompt;
@@ -24,7 +25,7 @@ var welcomePhrases = [
 
 var recipePhrases = [
     "to make it you need:",
-    "the instriction is:",
+    "the instruction is:",
     "the recipe is:"
 ];
 
@@ -36,8 +37,6 @@ var notFoundPhrases = [
     "i cand find any cocktail with this name",
     "sorry but i cant find any cocktails",
     "no such cocktails on the list",
-    "does this cocktail realy exist?",
-    "i dont think that it is the name of real cocktail",
     "<say-as interpret-as=\"interjection\">oh boy</say-as>; i cant find cocktail"
 ];
 
@@ -71,13 +70,16 @@ var handlers = {
         var speechOutput = ""
         getListOfCoctailsByName(Name, function (records) {
             processCocktails(self, records, function (speechOutput, imageObj, cardTitle, cardContent, isTell) {
-                console.log(speechOutput);
+                console.log("speechOutput is:" + speechOutput);
                 if (imageObj != null && cardTitle != null && cardContent != null) {
+                    console.log("tell with card")
                     self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
                 } else {
                     if (isTell) {
+                        console.log("tell without card")
                         self.emit(':tell', speechOutput);
                     } else {
+                        console.log("ask without card")
                         self.emit(':ask', speechOutput);
                     }
                 }
@@ -98,11 +100,12 @@ var handlers = {
         var speechOutput = ""
         getListOfCoctailsIngredient(Name, function (records) {
             processCocktails(self, records, function (speechOutput, imageObj, cardTitle, cardContent, isTell) {
-                console.log(speechOutput);
+                console.log("speechOutput is:" + speechOutput);
                 if (imageObj != null && cardTitle != null && cardContent != null) {
                     self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
                 } else {
                     if (isTell) {
+                        console.log("tell with card")
                         self.emit(':tell', speechOutput);
                     } else {
                         self.emit(':ask', speechOutput);
@@ -142,8 +145,8 @@ var handlers = {
             // console.log(self.attributes.cocktails)
             console.log("slots: " + JSON.stringify(self.event.request.intent.slots));
             if (self.attributes.cocktails.length > 0) {
-                if (Number < 1 || Number > self.attributes.cocktails) {
-                    self.emit(':ask', "Hm, there is only " + cocktails.length + "coctails; Please tell the right number.");
+                if (Number < 1 || Number > self.attributes.cocktails.length) {
+                    self.emit(':ask', "Hm, there is only " + self.attributes.cocktails.length + "coctails; Please tell the right number.");
                 }
                 var cocktail = self.attributes.cocktails[Number - 1];
                 var imageObj;
@@ -176,10 +179,15 @@ var handlers = {
                 })
 
                 console.log("cocktail by number")
-                speechOutput = cocktail.strDrink + "; "
-                    + randomPhrase(ingredientsPhrases) + ingredientsStr + ";"
-                    + randomPhrase(recipePhrases) + cocktail.strInstructions + ";";
-                if (imageObj  && cardTitle  && cardContent ) {
+
+                var speech = new Speech();
+                speech.say(cocktail.strDrink);
+                speech.pause('300ms');
+                speech.say(randomPhrase(ingredientsPhrases) + ingredientsStr);
+                speech.pause('500ms');
+                speech.say(randomPhrase(recipePhrases) + cocktail.strInstructions);
+                speechOutput = speech.ssml(true);
+                if (imageObj && cardTitle && cardContent) {
                     self.emit(':tellWithCard', speechOutput, cardTitle, cardContent, imageObj);
                 } else {
                     self.emit(':tell', speechOutput);
@@ -198,9 +206,20 @@ var handlers = {
         this.emit(':tell', 'Ok, see you next time!');
     },
     'AMAZON.HelpIntent': function () {
-        speechOutput = "";
-        reprompt = "";
-        this.emit(':ask', speechOutput, reprompt);
+        var speech = new Speech();
+        speech.say("To use this skill you need to ask My Barmen to find the coctail you want");
+        speech.pause('300ms');
+        speech.say("Something like: ask My barmen to find margarita");
+        speech.pause('300ms');
+        speech.say("There is can be more than one cocktail named margarita, so My barmen will list the first few options and will ask you to choose one");
+        speech.pause('300ms');
+        speech.say("You can say a number of cocktail you want, and My barmen will help you with a recipe");
+        speech.pause('300ms');
+        speech.say("Also, you can find a cocktail with the ingredient you want, or a random cocktail. You can say: ask My barmen to find a wine-based cocktail or   ask My barmen to find a random cocktail");
+        speech.pause('300ms');
+        speech.say('Now you know how to use this skill. How can I help you?');
+        var speechOutput = speech.ssml(true);
+        this.emit(':ask', speechOutput);
     },
     'AMAZON.CancelIntent': function () {
         speechOutput = "";
@@ -256,27 +275,41 @@ function processCocktails(self, cocktails, callback) {
             })
 
             console.log("found 1")
-            speechOutput = "i found " + cocktails[0].strDrink + "; "
-                + randomPhrase(ingredientsPhrases) + ingredientsStr + ";"
-                + randomPhrase(recipePhrases) + cocktails[0].strInstructions + ";";
+            var speech = new Speech();
+            speech.say('i found ' + cocktails[0].strDrink);
+            speech.pause('300ms');
+            speech.say(randomPhrase(ingredientsPhrases) + ingredientsStr);
+            speech.pause('500ms');
+            speech.say(randomPhrase(recipePhrases) + cocktails[0].strInstructions);
+            speechOutput = speech.ssml(true);
             callback(speechOutput, imageObj, cardTitle, cardContent, true)
         } else if (count == 2) {
             console.log("found 2")
-            speechOutput = "i found 2 coctails; The " + cocktails[0].strDrink + " and " + cocktails[1].strDrink + "; " + randomPhrase(whichonePhrases);
+            var speech = new Speech();
+            speech.say("i found 2 coctails; The " + cocktails[0].strDrink + " and " + cocktails[1].strDrink);
+            speech.pause('300ms');
+            speech.say(randomPhrase(whichonePhrases));
+            speechOutput = speech.ssml(true);
             callback(speechOutput, null, null, null, false)
         } else if (count >= 3) {
             console.log("found 3")
-            speechOutput = "i found " + count + " coctails; The first 3 is the " + cocktails[0].strDrink + ", " + cocktails[1].strDrink + ", " + cocktails[2].strDrink + "; " + randomPhrase(whichonePhrases);
+            var speech = new Speech();
+            speech.say("i found " + count + " coctails");
+            speech.pause('300ms');
+            speech.say("The first 3 is the " + cocktails[0].strDrink + ", " + cocktails[1].strDrink + ", " + cocktails[2].strDrink);
+            speech.pause('500ms');
+            speech.say(randomPhrase(whichonePhrases));
+            speechOutput = speech.ssml(true);
             callback(speechOutput, null, null, null, false)
         } else if (count == 0) {
             console.log("not found")
-            speechOutput = randomPhrase(notFoundPhrases);
-            callback(speechOutput, null, null, null, true)
+            speechOutput = randomPhrase(notFoundPhrases)+"; please ask again";
+            callback(speechOutput, null, null, null, false)
         }
     } else {
         console.log("not found")
-        speechOutput = randomPhrase(notFoundPhrases);
-        callback(speechOutput, null, null, null, true)
+        speechOutput = randomPhrase(notFoundPhrases)+"; please ask again";
+        callback(speechOutput, null, null, null, false)
     }
 }
 
