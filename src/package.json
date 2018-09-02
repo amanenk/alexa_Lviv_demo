@@ -13,8 +13,8 @@
   ],
   "author": "alwaysbeclozing.com",
   "dependencies": {
-    "alexa-sdk": "^1.0.10",
-    "request": "^2.81.0",
-    "ssml-builder": "^0.2.3"
+    "alexa-sdk": "^1.0.25",
+    "request": "^2.88.0",
+    "ssml-builder": "^0.4.3"
   }
 }
